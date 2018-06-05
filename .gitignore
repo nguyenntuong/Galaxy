@@ -30,6 +30,4 @@
 *.exe
 *.out
 *.app
-.vs/Galaxy/v15/.suo
-.vs/Galaxy/v15/Browse.VC.db
-.vs/Galaxy/v15/Browse.VC.opendb
+.vs/*
