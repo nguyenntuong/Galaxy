@@ -1,0 +1,26 @@
+#pragma once
+#include<iostream>
+#include<ctime>
+#include<list>
+using namespace std;
+class Resource
+{
+private:
+	static string docs[1];
+	static string backgrounds[1];
+	static string ship[3];
+	static string control[4];
+	static string enemy[4];
+	static string bullet[2];
+	static int step;
+public:
+	Resource();
+	static string getdocs();
+	static string getbackground();
+	static string getbullet(int type);
+	static string getcontrol(int type);
+	static string getrandomEnemy();
+	static string getshipAnimate();
+	~Resource();
+};
+

@@ -1,4 +1,3 @@
-﻿  backgroud.cpp
-  main.cpp
-  Generating Code...
+﻿  main.cpp
+d:\th\galaxy\galaxy\main.cpp(132): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   Galaxy.vcxproj -> D:\TH\Galaxy\x64\Debug\Galaxy.exe
