@@ -12,6 +12,7 @@ private:
 	static string control[4];
 	static string enemy[4];
 	static string bullet[2];
+	static string planted[7];
 	static int step;
 public:
 	Resource();
@@ -20,6 +21,7 @@ public:
 	static string getbullet(int type);
 	static string getcontrol(int type);
 	static string getrandomEnemy();
+	static string getrandomPlanted();
 	static string getshipAnimate();
 	~Resource();
 };
