@@ -17,6 +17,7 @@ private:
 	static string item[1];
 	static string assetcontrol[2];
 	static string processbar[1];
+	static string font[1];
 public:
 	Resource();
 	static string getdocs();
@@ -30,6 +31,7 @@ public:
 	static string getrandomItem();
 	static string getassetcontrol(int i);
 	static string getassetprocessbar();
+	static string getfont(int i);
 	~Resource();
 };
 

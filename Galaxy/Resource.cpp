@@ -75,6 +75,11 @@ string Resource::getassetprocessbar()
 {
 	return string(processbar[0]);
 }
+string Resource::font[1] = { "./Asset/font/Oregano-Regular.ttf" };
+string Resource::getfont(int i)
+{
+	return string(font[i]);
+}
 
 
 Resource::~Resource()

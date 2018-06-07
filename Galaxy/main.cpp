@@ -2,6 +2,7 @@
 #include<vector>
 #include<math.h>
 #include<ctime>
+#include<string>
 #include<SFML\Graphics.hpp>
 #include "Resource.h"
 
@@ -11,9 +12,12 @@ struct InfoGame
 {
 	int fuel = 100;
 	int score = 0;
-	bool isPlay = false;
+	bool isOver = false;
 	bool isPause = false;
 };
+
+sf::Text sco;
+sf::Text fuel;
 
 Sprite backgroundFrame;
 
@@ -251,7 +255,7 @@ void checkOut()
 	}
 }
 
-void checkImpactBulletObj()
+void checkImpactBulletObj(InfoGame &ng)
 {
 	if (bulletFrame.size() != 0 && friendFrame.size() != 0)
 	{
@@ -267,6 +271,7 @@ void checkImpactBulletObj()
 				{
 					bulletFrame.erase(bulletFrame.begin() + i);
 					friendFrame.erase(friendFrame.begin() + f);
+					ng.score += 10;
 					break;
 				}
 				fsize = int(friendFrame.size());
@@ -289,7 +294,7 @@ void checkImpactShipItem(InfoGame &ng)
 			if (shipFrame[step].getGlobalBounds().contains(itemFrame[i].getPosition()))
 			{
 				itemFrame.erase(itemFrame.begin() + i);
-				ng.fuel >= 100 ? ng.fuel = 100 : ng.fuel += 10;
+				ng.fuel >= 90 ? ng.fuel = 100 : ng.fuel += 10;
 			}
 			isize = int(itemFrame.size());
 			i++;
@@ -297,19 +302,46 @@ void checkImpactShipItem(InfoGame &ng)
 	}
 }
 
-void timecounter(InfoGame &nw, time_t after)
+void setTextlayout()
 {
+	Font *font = new Font();
+	if (!font->loadFromFile(Resource::getfont(0)))
+	{
+		std::cout << "Error loading font\n";
+	}
+	//set up text properties
+		
+	fuel.setFont(*font);
+	fuel.setCharacterSize(20);
+	fuel.setStyle(sf::Text::Bold);
+	fuel.setFillColor(sf::Color::White);
+	fuel.setPosition(processbar.getPosition().x - processbar.getGlobalBounds().width, processbar.getPosition().y);
 
+	sco.setFont(*font);
+	sco.setCharacterSize(20);
+	sco.setStyle(sf::Text::Bold);
+	sco.setFillColor(sf::Color::White);
+	sco.setPosition(fuel.getPosition().x - 150, fuel.getPosition().y);
+	
 }
 
+void drawTextlayout(RenderWindow &gw, InfoGame ng)
+{
+	fuel.setString(String("Fuel: "+to_string(ng.fuel)));
+	sco.setString(String("Score: "+to_string(ng.score)));
+	gw.draw(fuel);
+	gw.draw(sco);
+}
 int main()
 {
 	RenderWindow gw(VideoMode(960, 540), "Galaxy");
 	gw.setFramerateLimit(30);
 	setBackgroud();
 	setControl();
+	
 	createShip();
 	createprocessbar();
+	setTextlayout();
 
 	srand(NULL);
 	Vector2f shipmov;
@@ -319,6 +351,7 @@ int main()
 	before = time(0);
 	while (gw.isOpen())
 	{
+		//gw.pushGLStates();
 		animateShip();
 		Vector2i pos = Mouse::getPosition(gw);
 		bool hover = false;
@@ -428,31 +461,34 @@ int main()
 				}
 			}
 		}
+
 		std::cout << "Bullet counter: " << bulletFrame.size();
 		std::cout << " + Friend counter: " << friendFrame.size();
 		std::cout << " + Item counter: " << itemFrame.size();
 		std::cout << " + Memory: " << sizeof backgroundFrame + sizeof shipFrame + sizeof friendFrame + sizeof bulletFrame;
-		std::cout << std::endl;
+		std::cout << "\n";
 		//// Draw ////
 		if (!ng.isPause)
 		{
 
 			gw.clear();
 			checkOut();
-			checkImpactBulletObj();
+			checkImpactBulletObj(ng);
 			checkImpactShipItem(ng);
 			gw.draw(backgroundFrame);
 			drawFriend(gw, 4);
 			animateprocessbar(gw, ng.fuel);
+			drawTextlayout(gw, ng);
 			drawMainShip(gw, shipmov.x, shipmov.y);
 			drawBullet(gw, 20);
 			drawItem(gw, 1);
 			drawControl(gw);
+			//gw.popGLStates();
 			gw.display();
 
 			if (time(0) - before >= 1)
 			{
-				ng.fuel-=5;
+				ng.fuel-=2;
 				before = time(0);
 			}
 			
@@ -463,10 +499,12 @@ int main()
 			gw.draw(backgroundFrame);
 			drawFriend(gw, 0);
 			animateprocessbar(gw, ng.fuel);
+			drawTextlayout(gw, ng);
 			drawMainShip(gw, 0, 0);
 			drawBullet(gw, 0);
 			drawItem(gw, 0);
 			drawControl(gw);
+			//gw.popGLStates();
 			gw.display();
 			
 		}
