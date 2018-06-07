@@ -27,12 +27,19 @@ string Resource::getcontrol(int type)
 	return string(control[type]);		
 }
 
-string Resource::enemy[4] = { "./Asset/images/enemy/aestroid_brown.png","./Asset/images/enemy/aestroid_dark.png"
+string Resource::enemystone[4] = { "./Asset/images/enemy/aestroid_brown.png","./Asset/images/enemy/aestroid_dark.png"
 , "./Asset/images/enemy/aestroid_gray.png","./Asset/images/enemy/aestroid_gray_2.png" };
-string Resource::getrandomEnemy()
+string Resource::getrandomEnemyStone()
 {	
 	srand(time(NULL));	
-	return string(enemy[rand() % 4]);
+	return string(enemystone[rand() % 4]);
+}
+string Resource::enemyship[2] = { "./Asset/images/e-ship/ship_1.png"
+, "./Asset/images/e-ship/ship_1.png" };
+string Resource::getrandomEnemyShip()
+{
+	srand(time(NULL));
+	return string(enemyship[rand() % 2]);
 }
 string Resource::planted[7] = {"./Asset/images/planets/001-global.png"
 ,"./Asset/images/planets/002-travel.png"
@@ -51,6 +58,22 @@ string Resource::ship[3] = { "./Asset/images/ship/main-1.png","./Asset/images/sh
 vector<string> Resource::getshipAnimate()
 {
 	return vector<string>(ship, ship + sizeof(ship) / sizeof(ship[0]));
+}
+string Resource::item[1] = { "./Asset/images/support/fuel.png" };
+string Resource::getrandomItem()
+{
+	srand(time(NULL));
+	return string(item[rand() % 1]);
+}
+string Resource::assetcontrol[2] = { "./Asset/images/control/pause.png","./Asset/images/control/play.png" };
+string Resource::getassetcontrol(int i)
+{
+	return string(assetcontrol[i]);
+}
+string Resource::processbar[1] = { "./Asset/images/control/process.png" };
+string Resource::getassetprocessbar()
+{
+	return string(processbar[0]);
 }
 
 
