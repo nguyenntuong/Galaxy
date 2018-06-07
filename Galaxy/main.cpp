@@ -13,7 +13,7 @@ Sprite backgroundFrame;
 
 std::vector<Sprite> assetFrame;
 
-Sprite shipFrame;
+std::vector<Sprite> shipFrame;
 
 std::vector<Sprite> enemyFrame;
 
@@ -71,42 +71,62 @@ void drawControl(RenderWindow &gw)
 		gw.draw(controlFrame[i]);
 	}
 }
-
-void animateShip()
+int step = 0;
+void animateShip(RenderWindow &gw)
 {
-	Texture* shipTexture = new Texture();
-	shipTexture->loadFromFile(Resource::getshipAnimate());
-	shipFrame.setTexture(*shipTexture);
-	shipFrame.setScale(0.5, 0.5);
+	if (step == 3)
+	{
+		step = 0;
+	}
+	gw.draw(shipFrame[step++]);
 }
 
 void createShip()
 {
-	Texture* shipTexture = new Texture();
-	shipTexture->loadFromFile(Resource::getshipAnimate());
-	shipFrame.setTexture(*shipTexture);
-	shipFrame.setScale(0.5, 0.5);
-	shipFrame.setPosition(10, 250);
+	for (int i = 0; i < int(Resource::getshipAnimate().size()); i++)
+	{
+		Texture *temptx = new Texture();
+		temptx->loadFromFile(Resource::getshipAnimate()[i]);
+		Sprite temp;
+		temp.setTexture(*temptx);
+		temp.setScale(0.5, 0.5);
+		temp.setScale(0.5, 0.5);
+		temp.setPosition(10, 250);
+		shipFrame.push_back(temp);
+	}
+	
 }
 void drawMainShip(RenderWindow &gw, float x, float y)
 {
-	shipFrame.move(x, y);
-	if (!backgroundFrame.getGlobalBounds().contains(shipFrame.getPosition()))
+	if (step == 3)
 	{
-		shipFrame.move(-x, -y);
+		step = 0;
 	}
-	gw.draw(shipFrame);
+	for (int i = 0; i < int(shipFrame.size()); i++)
+	{
+		shipFrame[i].move(x, y);
+		if (!backgroundFrame.getGlobalBounds().contains(shipFrame[i].getPosition()))
+		{
+			shipFrame[i].move(-x, -y); 
+		}
+	} 	
+	gw.draw(shipFrame[step]);
+	
 }
 
 void createBullet()
 {
+	if (step == 3)
+	{
+		step = 0;
+	}
 	Texture *temptx = new Texture();
 	temptx->loadFromFile(Resource::getbullet(0));
 	Sprite temp;
 	temp.setTexture(*temptx);
 	temp.setScale(0.1, 0.1);
-	temp.setPosition(shipFrame.getPosition().x + shipFrame.getGlobalBounds().width,
-		shipFrame.getPosition().y+(shipFrame.getGlobalBounds().height-temp.getGlobalBounds().height)/2);
+	temp.setPosition(shipFrame[step].getPosition().x + shipFrame[step].getGlobalBounds().width,
+		shipFrame[step].getPosition().y + (shipFrame[step].getGlobalBounds().height - temp.getGlobalBounds().height) / 2);
 	bulletFrame.push_back(temp);
 }
 
@@ -129,7 +149,7 @@ void createPlant()
 		Sprite temp;
 		temp.setTexture(*temptx);
 		temp.setScale(0.3, 0.3);
-		temp.setPosition(backgroundFrame.getGlobalBounds().width-1, rand() % (int)backgroundFrame.getGlobalBounds().height-temp.getGlobalBounds().height);
+		temp.setPosition(backgroundFrame.getGlobalBounds().width - 1, rand() % (int)backgroundFrame.getGlobalBounds().height - temp.getGlobalBounds().height);
 		friendFrame.push_back(temp);
 	}
 }
@@ -175,11 +195,11 @@ int main()
 	bool checkkey = true;
 	while (gw.isOpen())
 	{
-		animateShip();
+		//animateShip(gw);
 		Vector2i pos = Mouse::getPosition(gw);
 		bool hover = false;
 		Event ge;
-		if (rand() % 10 == 4 && rand() % 10 == 5)
+		if (rand() % 15 == 4 && rand() % 10 == 5)
 		{
 			createPlant();
 		}
@@ -227,7 +247,7 @@ int main()
 			if (ge.type == Event::KeyPressed)
 			{
 				if (ge.key.code == Keyboard::Space)
-				{ 
+				{
 					if (checkkey)
 					{
 						createBullet();
@@ -238,25 +258,25 @@ int main()
 			if (ge.type == Event::KeyReleased)
 			{
 				if (ge.key.code == Keyboard::Space)
-				{					
+				{
 					checkkey = true;
 				}
 			}
 		}
-	cout << "Bullet counter: " << bulletFrame.size();
-	cout << " + Friend counter: " << friendFrame.size();
-	cout << " + Memory: " << sizeof backgroundFrame + sizeof shipFrame  + sizeof friendFrame  + sizeof bulletFrame ;
-	cout << endl;
-	//// Draw ////
-	gw.clear();
-	checkOut();
-	gw.draw(backgroundFrame);
-	drawMainShip(gw, shipmov.x, shipmov.y);
-	drawFriend(gw, 4);
-	drawBullet(gw, 20);
-	drawControl(gw);
-	gw.display();
-}
-
-return 0;
+		cout << "Bullet counter: " << bulletFrame.size();
+		cout << " + Friend counter: " << friendFrame.size();
+		cout << " + Memory: " << sizeof backgroundFrame + sizeof shipFrame + sizeof friendFrame + sizeof bulletFrame;
+		cout << endl;
+		//// Draw ////
+		gw.clear();
+		checkOut();
+		gw.draw(backgroundFrame);		
+		drawFriend(gw, 4);
+		drawMainShip(gw, shipmov.x, shipmov.y);
+		drawBullet(gw, 20);
+		drawControl(gw);
+		gw.display();
+		step++;
+	}
+	return 0;
 }

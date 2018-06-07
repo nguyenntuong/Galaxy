@@ -47,15 +47,10 @@ string Resource::getrandomPlanted()
 	return string(planted[rand() % 7]);
 }
 
-int Resource::step = 0;
 string Resource::ship[3] = { "./Asset/images/ship/main-1.png","./Asset/images/ship/main-2.png","./Asset/images/ship/main-3.png" };
-string Resource::getshipAnimate()
+vector<string> Resource::getshipAnimate()
 {
-	if (step == 3)
-	{
-		step = 0;
-	}	
-	return string(ship[step++]);
+	return vector<string>(ship, ship + sizeof(ship) / sizeof(ship[0]));
 }
 
 

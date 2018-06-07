@@ -1,7 +1,7 @@
 #pragma once
 #include<iostream>
 #include<ctime>
-#include<list>
+#include<vector>
 using namespace std;
 class Resource
 {
@@ -13,7 +13,6 @@ private:
 	static string enemy[4];
 	static string bullet[2];
 	static string planted[7];
-	static int step;
 public:
 	Resource();
 	static string getdocs();
@@ -22,7 +21,7 @@ public:
 	static string getcontrol(int type);
 	static string getrandomEnemy();
 	static string getrandomPlanted();
-	static string getshipAnimate();
+	static vector<string> getshipAnimate();
 	~Resource();
 };
 
