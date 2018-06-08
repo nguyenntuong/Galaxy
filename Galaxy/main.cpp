@@ -45,7 +45,6 @@ void setBackgroud()
 	backgroundFrame.setTexture(*backgroundTexture);
 	backgroundFrame.setScale(0.5, 0.5);
 }
-
 void setControl()
 {
 	for (int i = 0; i < 4; i++)
@@ -109,7 +108,7 @@ void drawControl(RenderWindow &gw)
 	}
 }
 int step = 0;
-void animateShip()
+void checkShipframe()
 {
 	if (step == 3)
 	{
@@ -176,6 +175,7 @@ void createPlant()
 		temptx->loadFromFile(Resource::getrandomPlanted());
 		Sprite temp;
 		temp.setTexture(*temptx);
+		if(temp.getGlobalBounds().height>100)
 		temp.setScale(0.3, 0.3);
 		temp.setPosition(backgroundFrame.getGlobalBounds().width - 1, rand() % (int)backgroundFrame.getGlobalBounds().height - temp.getGlobalBounds().height);
 		friendFrame.push_back(temp);
@@ -267,7 +267,7 @@ void checkImpactBulletObj(InfoGame &ng)
 			int fsize = int(friendFrame.size());
 			while (f < fsize)
 			{
-				if (friendFrame[f].getGlobalBounds().contains(bulletFrame[i].getPosition()))
+				if (friendFrame[f].getGlobalBounds().contains(float(bulletFrame[i].getPosition().x + float(bulletFrame[i].getGlobalBounds().width / 2)), float(bulletFrame[i].getPosition().y + float(bulletFrame[i].getGlobalBounds().height / 2))))
 				{
 					bulletFrame.erase(bulletFrame.begin() + i);
 					friendFrame.erase(friendFrame.begin() + f);
@@ -312,10 +312,10 @@ void setTextlayout()
 	//set up text properties
 		
 	fuel.setFont(*font);
-	fuel.setCharacterSize(20);
+	fuel.setCharacterSize(12);
 	fuel.setStyle(sf::Text::Bold);
 	fuel.setFillColor(sf::Color::White);
-	fuel.setPosition(processbar.getPosition().x - processbar.getGlobalBounds().width, processbar.getPosition().y);
+	fuel.setPosition(processbar.getPosition().x + fuel.getString().getSize()*3, processbar.getPosition().y);
 
 	sco.setFont(*font);
 	sco.setCharacterSize(20);
@@ -327,11 +327,21 @@ void setTextlayout()
 
 void drawTextlayout(RenderWindow &gw, InfoGame ng)
 {
-	fuel.setString(String("Fuel: "+to_string(ng.fuel)));
+	fuel.setString(String("FUEL: "+to_string(ng.fuel)));
+	if (ng.fuel<=20)
+	{
+		fuel.setFillColor(Color::Red);
+	}
+	else
+	{
+		fuel.setFillColor(sf::Color::White);
+	}
+	fuel.setPosition(processbar.getPosition().x +(50- fuel.getString().getSize()*3), processbar.getPosition().y);
 	sco.setString(String("Score: "+to_string(ng.score)));
 	gw.draw(fuel);
 	gw.draw(sco);
 }
+
 int main()
 {
 	RenderWindow gw(VideoMode(960, 540), "Galaxy");
@@ -352,7 +362,7 @@ int main()
 	while (gw.isOpen())
 	{
 		//gw.pushGLStates();
-		animateShip();
+		checkShipframe();
 		Vector2i pos = Mouse::getPosition(gw);
 		bool hover = false;
 		Event ge;
