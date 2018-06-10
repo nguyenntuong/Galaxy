@@ -16,10 +16,15 @@ struct InfoGame
 	bool isPause = false;
 };
 
-sf::Text sco;
-sf::Text fuel;
+Text sco;
+Text fuel;
+Text intro;
 
 Sprite backgroundFrame;
+
+Sprite backgroundIntroFrame;
+
+Sprite logoFrame;
 
 Sprite processbar;
 
@@ -29,6 +34,10 @@ std::vector<Sprite> shipFrame;
 
 std::vector<Sprite> enemyFrame;
 
+std::vector<pair<Sprite, int>> enemystoneFrame;
+
+std::vector<Sprite> plantedFrame;
+
 std::vector<Sprite> friendFrame;
 
 std::vector<Sprite> itemFrame;
@@ -37,15 +46,57 @@ std::vector<Sprite> controlFrame;
 
 std::vector<Sprite> bulletFrame;
 
+std::vector<Sprite> bulleteFrame;
 
-void setBackgroud()
+
+
+void createBackground()
 {
 	Texture* backgroundTexture = new Texture();
-	backgroundTexture->loadFromFile(Resource::getbackground());
+	backgroundTexture->loadFromFile(Resource::getbackground(0));
 	backgroundFrame.setTexture(*backgroundTexture);
 	backgroundFrame.setScale(0.5, 0.5);
 }
-void setControl()
+
+void drawBackground(RenderWindow &gw)
+{
+	gw.draw(backgroundFrame);
+}
+
+void createLogo()
+{
+	Texture* logoTexture = new Texture();
+	logoTexture->loadFromFile(Resource::getlogo(0));
+	logoFrame.setTexture(*logoTexture);
+	logoFrame.setScale(0.5, 0.5);
+	logoFrame.setPosition(backgroundFrame.getGlobalBounds().width - logoFrame.getGlobalBounds().width - 5,
+		backgroundFrame.getGlobalBounds().height - logoFrame.getGlobalBounds().height - 5);
+}
+
+void drawLogo(RenderWindow &gw)
+{
+	gw.draw(logoFrame);
+}
+
+void createBackgoundIntro()
+{
+	Texture* backgroundIntroTexture = new Texture();
+	backgroundIntroTexture->loadFromFile(Resource::getbackground(1));
+	backgroundIntroFrame.setTexture(*backgroundIntroTexture);
+	backgroundIntroFrame.setScale(0.6, 0.6);
+	backgroundIntroFrame.setPosition(backgroundFrame.getGlobalBounds().width / 2 - backgroundIntroFrame.getGlobalBounds().width / 2,
+		backgroundFrame.getGlobalBounds().height / 2 - backgroundIntroFrame.getGlobalBounds().height / 2);
+}
+
+void drawBackgroundIntro(RenderWindow &gw, Text text)
+{
+	text.setString(Resource::getintro());
+	text.setPosition(backgroundIntroFrame.getPosition().x + 5, backgroundIntroFrame.getPosition().y + 5);
+	gw.draw(backgroundIntroFrame);
+	gw.draw(text);
+}
+
+void createControl()
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -125,12 +176,12 @@ void createShip()
 		Sprite temp;
 		temp.setTexture(*temptx);
 		temp.setScale(0.5, 0.5);
-		temp.setScale(0.5, 0.5);
 		temp.setPosition(10, 250);
 		shipFrame.push_back(temp);
 	}
 
 }
+
 void drawMainShip(RenderWindow &gw, float x, float y)
 {
 	for (int i = 0; i < int(shipFrame.size()); i++)
@@ -143,6 +194,59 @@ void drawMainShip(RenderWindow &gw, float x, float y)
 	}
 	gw.draw(shipFrame[step]);
 
+}
+
+void createBullete(Sprite enemy)
+{
+	Texture *temptx = new Texture();
+	temptx->loadFromFile(Resource::getbullet(1));
+	Sprite temp;
+	temp.setTexture(*temptx);
+	temp.setScale(0.1, 0.1);
+	temp.setPosition(enemy.getPosition().x + enemy.getGlobalBounds().width,
+		enemy.getPosition().y + (enemy.getGlobalBounds().height - temp.getGlobalBounds().height) / 2);
+	bulleteFrame.push_back(temp);
+}
+
+void drawBullete(RenderWindow &gw, float speed)
+{
+	for (int i = 0; i < (int)bulleteFrame.size(); i++)
+	{
+		bulleteFrame[i].move(-speed, 0);
+		gw.draw(bulleteFrame[i]);
+	}
+}
+
+void createenemyShip()
+{
+	if (enemyFrame.size() < 10)
+	{
+		srand(NULL);
+		Texture *temptx = new Texture();
+		temptx->loadFromFile(Resource::getrandomEnemyShip());
+		Sprite temp;
+		temp.setTexture(*temptx);
+		temp.setScale(0.5, 0.5);
+		temp.setPosition(backgroundFrame.getGlobalBounds().width - 1, rand() % (int)backgroundFrame.getGlobalBounds().height + shipFrame[0].getGlobalBounds().height);
+		enemyFrame.push_back(temp);
+	}
+}
+
+int animateenemy = 0;
+Texture *cache;
+void drawenemyShip(RenderWindow &gw, float speed)
+{
+	if (animateenemy == 4) animateenemy = 0;
+	for (int i = 0; i < int(enemyFrame.size()); i++)
+	{
+		enemyFrame[i].move(-speed, 0);
+		enemyFrame[i].setTextureRect(IntRect(animateenemy * 80, 0, 80, 80));
+		gw.draw(enemyFrame[i]);
+		if (rand() % 25 == 4)
+		{
+			createBullete(enemyFrame[i]);
+		}
+	}
 }
 
 void createBullet()
@@ -168,26 +272,52 @@ void drawBullet(RenderWindow &gw, float speed)
 
 void createPlant()
 {
-	if (friendFrame.size() < 25)
+	if (plantedFrame.size() < 25)
 	{
 		srand(NULL);
 		Texture *temptx = new Texture();
 		temptx->loadFromFile(Resource::getrandomPlanted());
 		Sprite temp;
 		temp.setTexture(*temptx);
-		if(temp.getGlobalBounds().height>100)
-		temp.setScale(0.3, 0.3);
+		if (temp.getGlobalBounds().height > 100)
+			temp.setScale(0.3, 0.3);
 		temp.setPosition(backgroundFrame.getGlobalBounds().width - 1, rand() % (int)backgroundFrame.getGlobalBounds().height - temp.getGlobalBounds().height);
-		friendFrame.push_back(temp);
+		plantedFrame.push_back(temp);
 	}
 }
 
-void drawFriend(RenderWindow &gw, float speed)
+void drawPlant(RenderWindow &gw, float speed)
 {
-	for (int i = 0; i < (int)friendFrame.size(); i++)
+	for (int i = 0; i < (int)plantedFrame.size(); i++)
 	{
-		friendFrame[i].move(-speed, 0);
-		gw.draw(friendFrame[i]);
+		plantedFrame[i].move(-speed, 0);
+		gw.draw(plantedFrame[i]);
+	}
+}
+
+void createEnemystone()
+{
+	if (enemystoneFrame.size() < 10)
+	{
+		srand(NULL);
+		Texture *temptx = new Texture();
+		temptx->loadFromFile(Resource::getrandomEnemyStone());
+		Sprite temp;
+		temp.setTexture(*temptx);
+		if (temp.getGlobalBounds().height > 100)
+			temp.setScale(0.3, 0.3);
+		temp.setPosition(backgroundFrame.getGlobalBounds().width - 1,
+			rand() % (int)backgroundFrame.getGlobalBounds().height + temp.getGlobalBounds().height);
+		enemystoneFrame.push_back(make_pair(temp, 2));
+	}
+}
+
+void drawEnemystone(RenderWindow &gw, float speed)
+{
+	for (int i = 0; i < (int)enemystoneFrame.size(); i++)
+	{
+		enemystoneFrame[i].first.move(-speed, 0);
+		gw.draw(enemystoneFrame[i].first);
 	}
 }
 
@@ -220,7 +350,7 @@ void createprocessbar()
 	Texture *temptx = new Texture();
 	temptx->loadFromFile(Resource::getassetprocessbar());
 	processbar.setTexture(*temptx);
-	processbar.setPosition((int)backgroundFrame.getGlobalBounds().width - processbar.getGlobalBounds().width-10, 10);
+	processbar.setPosition((int)backgroundFrame.getGlobalBounds().width - processbar.getGlobalBounds().width - 10, 10);
 	processbar.setTextureRect(IntRect(0, 0, processbar.getGlobalBounds().width, processbar.getGlobalBounds().height));
 }
 
@@ -230,51 +360,140 @@ void animateprocessbar(RenderWindow &gw, int percent)
 	gw.draw(processbar);
 }
 
+void setTextlayout()
+{
+	Font *font = new Font();
+	if (!font->loadFromFile(Resource::getfont(0)))
+	{
+		std::cout << "Error loading font\n";
+	}
+	//set up text properties
+
+	fuel.setFont(*font);
+	fuel.setCharacterSize(12);
+	fuel.setStyle(sf::Text::Bold);
+	fuel.setFillColor(sf::Color::White);
+	fuel.setPosition(processbar.getPosition().x + fuel.getString().getSize() * 3, processbar.getPosition().y);
+
+	sco.setFont(*font);
+	sco.setCharacterSize(20);
+	sco.setStyle(sf::Text::Bold);
+	sco.setFillColor(sf::Color::White);
+	sco.setPosition(fuel.getPosition().x - 150, fuel.getPosition().y);
+
+	intro.setFont(*font);
+	intro.setCharacterSize(14);
+	intro.setStyle(sf::Text::Bold);
+	intro.setFillColor(sf::Color::Black);
+}
+
+void drawTextlayout(RenderWindow &gw, InfoGame ng)
+{
+	fuel.setString(String("FUEL: " + to_string(ng.fuel)));
+	if (ng.fuel <= 20)
+	{
+		fuel.setFillColor(Color::Red);
+	}
+	else
+	{
+		fuel.setFillColor(sf::Color::White);
+	}
+	fuel.setPosition(processbar.getPosition().x + (50 - fuel.getString().getSize() * 3), processbar.getPosition().y);
+	sco.setString(String("Score: " + to_string(ng.score)));
+	gw.draw(fuel);
+	gw.draw(sco);
+}
+
 void checkOut()
 {
 	if (bulletFrame.size() != 0)
 	{
 		if (!backgroundFrame.getGlobalBounds().contains(bulletFrame.front().getPosition()))
 		{
+			delete bulletFrame[0].getTexture();
 			bulletFrame.erase(bulletFrame.begin());
 		}
 	}
-	if (friendFrame.size() != 0)
+	if (plantedFrame.size() != 0)
 	{
-		if (!backgroundFrame.getGlobalBounds().contains(friendFrame.front().getPosition()))
+		if (!backgroundFrame.getGlobalBounds().contains(plantedFrame.front().getPosition()))
 		{
-			friendFrame.erase(friendFrame.begin());
+			delete plantedFrame[0].getTexture();
+			plantedFrame.erase(plantedFrame.begin());
 		}
 	}
 	if (itemFrame.size() != 0)
 	{
 		if (!backgroundFrame.getGlobalBounds().contains(itemFrame.front().getPosition()))
 		{
+			delete itemFrame[0].getTexture();
 			itemFrame.erase(itemFrame.begin());
+		}
+	}
+	if (enemyFrame.size() != 0)
+	{
+		if (!backgroundFrame.getGlobalBounds().contains(enemyFrame.front().getPosition()))
+		{
+			delete enemyFrame[0].getTexture();
+			enemyFrame.erase(enemyFrame.begin());
 		}
 	}
 }
 
 void checkImpactBulletObj(InfoGame &ng)
 {
-	if (bulletFrame.size() != 0 && friendFrame.size() != 0)
+	if (bulletFrame.size() != 0 && enemystoneFrame.size() != 0 || enemyFrame.size() != 0)
 	{
 		int bsize = int(bulletFrame.size());
 		int i = 0;
 		while (i < bsize)
 		{
+			bool flag = false;
 			int f = 0;
-			int fsize = int(friendFrame.size());
+			int fsize = int(enemyFrame.size());
 			while (f < fsize)
 			{
-				if (friendFrame[f].getGlobalBounds().contains(float(bulletFrame[i].getPosition().x + float(bulletFrame[i].getGlobalBounds().width / 2)), float(bulletFrame[i].getPosition().y + float(bulletFrame[i].getGlobalBounds().height / 2))))
+				if (enemyFrame[f].getGlobalBounds().contains(float(bulletFrame[i].getPosition().x + float(bulletFrame[i].getGlobalBounds().width / 2)), float(bulletFrame[i].getPosition().y + float(bulletFrame[i].getGlobalBounds().height / 2))))
 				{
+					delete bulletFrame[i].getTexture();
+					delete enemyFrame[f].getTexture();
 					bulletFrame.erase(bulletFrame.begin() + i);
-					friendFrame.erase(friendFrame.begin() + f);
-					ng.score += 10;
+					enemyFrame.erase(enemyFrame.begin() + f);
+					ng.score += 5;
+					flag = true;
 					break;
 				}
-				fsize = int(friendFrame.size());
+				fsize = int(enemyFrame.size());
+				f++;
+			}
+			if (flag)
+			{
+				bsize = int(bulletFrame.size());
+				i++;
+				continue;
+			}
+			f = 0;
+			fsize = int(enemystoneFrame.size());
+			while (f < fsize)
+			{
+				if (enemystoneFrame[f].first.getGlobalBounds().contains(float(bulletFrame[i].getPosition().x + float(bulletFrame[i].getGlobalBounds().width / 2)), 
+					float(bulletFrame[i].getPosition().y + float(bulletFrame[i].getGlobalBounds().height / 2))))
+				{
+					if (enemystoneFrame[f].second == 0)
+					{
+						delete bulletFrame[i].getTexture();
+						delete enemystoneFrame[f].first.getTexture();
+						bulletFrame.erase(bulletFrame.begin() + i);
+						enemystoneFrame.erase(enemystoneFrame.begin() + f);
+						ng.score += 10;
+					}
+					else
+					{
+						enemystoneFrame[f].second--;
+					}
+					break;
+				}
+				fsize = int(enemystoneFrame.size());
 				f++;
 			}
 			bsize = int(bulletFrame.size());
@@ -293,6 +512,7 @@ void checkImpactShipItem(InfoGame &ng)
 		{
 			if (shipFrame[step].getGlobalBounds().contains(itemFrame[i].getPosition()))
 			{
+				delete itemFrame[i].getTexture();
 				itemFrame.erase(itemFrame.begin() + i);
 				ng.fuel >= 90 ? ng.fuel = 100 : ng.fuel += 10;
 			}
@@ -300,55 +520,34 @@ void checkImpactShipItem(InfoGame &ng)
 			i++;
 		}
 	}
-}
 
-void setTextlayout()
-{
-	Font *font = new Font();
-	if (!font->loadFromFile(Resource::getfont(0)))
+	if (bulleteFrame.size() != 0)
 	{
-		std::cout << "Error loading font\n";
+		int isize = int(bulleteFrame.size());
+		int i = 0;
+		while (i < isize)
+		{
+			if (shipFrame[step].getGlobalBounds().contains(bulleteFrame[i].getPosition()))
+			{
+				delete bulleteFrame[i].getTexture();
+				bulleteFrame.erase(bulleteFrame.begin() + i);
+				ng.fuel <= 10 ? ng.fuel = 0 : ng.fuel -= 10;
+			}
+			isize = int(bulleteFrame.size());
+			i++;
+		}
 	}
-	//set up text properties
-		
-	fuel.setFont(*font);
-	fuel.setCharacterSize(12);
-	fuel.setStyle(sf::Text::Bold);
-	fuel.setFillColor(sf::Color::White);
-	fuel.setPosition(processbar.getPosition().x + fuel.getString().getSize()*3, processbar.getPosition().y);
-
-	sco.setFont(*font);
-	sco.setCharacterSize(20);
-	sco.setStyle(sf::Text::Bold);
-	sco.setFillColor(sf::Color::White);
-	sco.setPosition(fuel.getPosition().x - 150, fuel.getPosition().y);
-	
-}
-
-void drawTextlayout(RenderWindow &gw, InfoGame ng)
-{
-	fuel.setString(String("FUEL: "+to_string(ng.fuel)));
-	if (ng.fuel<=20)
-	{
-		fuel.setFillColor(Color::Red);
-	}
-	else
-	{
-		fuel.setFillColor(sf::Color::White);
-	}
-	fuel.setPosition(processbar.getPosition().x +(50- fuel.getString().getSize()*3), processbar.getPosition().y);
-	sco.setString(String("Score: "+to_string(ng.score)));
-	gw.draw(fuel);
-	gw.draw(sco);
 }
 
 int main()
 {
 	RenderWindow gw(VideoMode(960, 540), "Galaxy");
 	gw.setFramerateLimit(30);
-	setBackgroud();
-	setControl();
-	
+	createBackground();
+	createBackgoundIntro();
+	createControl();
+	createLogo();
+
 	createShip();
 	createprocessbar();
 	setTextlayout();
@@ -357,24 +556,35 @@ int main()
 	Vector2f shipmov;
 	InfoGame ng;
 	bool checkkey = true;
+	bool firstplay = true;
 	time_t before;
 	before = time(0);
 	while (gw.isOpen())
 	{
-		//gw.pushGLStates();
 		checkShipframe();
 		Vector2i pos = Mouse::getPosition(gw);
 		bool hover = false;
 		Event ge;
 		/// Random Planted
-		if (rand() % 10 == 4 && rand() % 10 == 5 && !ng.isPause)
+		if (rand() % 10 == 4 && rand() % 10 == 5 && !ng.isPause && !firstplay)
 		{
 			createPlant();
 		}
 		// Random Item
-		if (rand() % 15 == 5 && rand() % 10 == 5 && !ng.isPause)
+		if (rand() % 15 == 5 && rand() % 10 == 5 && !ng.isPause && !firstplay)
 		{
 			createItem();
+		}
+		/// Random enemy
+		if (rand() % 15 == 5 && rand() % 10 == 5 && !ng.isPause && !firstplay)
+		{
+			createenemyShip();
+		}
+		/// Random enemyStone
+		/// Random enemy
+		if (rand() % 15 == 5 && rand() % 10 == 5 && !ng.isPause && !firstplay)
+		{
+			createEnemystone();
 		}
 		while (gw.pollEvent(ge))
 		{
@@ -392,6 +602,11 @@ int main()
 					}
 					if (assetFrame[1].getGlobalBounds().contains(pos.x, pos.y))
 					{
+						ng.isPause = false;
+					}
+					if (backgroundIntroFrame.getGlobalBounds().contains(pos.x, pos.y))
+					{
+						firstplay = false;
 						ng.isPause = false;
 					}
 				}
@@ -433,13 +648,19 @@ int main()
 			}
 			if (ge.type == Event::KeyPressed)
 			{
+				firstplay = false;
+				ng.isPause = false;
 				if (ge.key.code == Keyboard::Space)
 				{
-					if (checkkey && !ng.isPause)
+					if (checkkey && !ng.isPause && !firstplay)
 					{
 						createBullet();
 					}
 					checkkey = false;
+				}
+				if (ge.key.code == Keyboard::P)
+				{
+					ng.isPause = true;
 				}
 			}
 			if (Keyboard::isKeyPressed(Keyboard::Up)) {
@@ -473,52 +694,58 @@ int main()
 		}
 
 		std::cout << "Bullet counter: " << bulletFrame.size();
-		std::cout << " + Friend counter: " << friendFrame.size();
+		std::cout << " + Friend counter: " << plantedFrame.size();
 		std::cout << " + Item counter: " << itemFrame.size();
-		std::cout << " + Memory: " << sizeof backgroundFrame + sizeof shipFrame + sizeof friendFrame + sizeof bulletFrame;
+		std::cout << " + Enemy counter: " << enemyFrame.size();
 		std::cout << "\n";
 		//// Draw ////
-		if (!ng.isPause)
+		if (!ng.isPause && !firstplay)
 		{
-
 			gw.clear();
 			checkOut();
 			checkImpactBulletObj(ng);
 			checkImpactShipItem(ng);
-			gw.draw(backgroundFrame);
-			drawFriend(gw, 4);
+			drawBackground(gw);
+			drawPlant(gw, 4);
+			drawEnemystone(gw, 3);
+			drawenemyShip(gw, 5);
 			animateprocessbar(gw, ng.fuel);
 			drawTextlayout(gw, ng);
 			drawMainShip(gw, shipmov.x, shipmov.y);
 			drawBullet(gw, 20);
+			drawBullete(gw, 15);
 			drawItem(gw, 1);
+			drawLogo(gw);
 			drawControl(gw);
-			//gw.popGLStates();
 			gw.display();
 
 			if (time(0) - before >= 1)
 			{
-				ng.fuel-=2;
+				ng.fuel -= 2;
 				before = time(0);
 			}
-			
+
 		}
 		else
 		{
 			gw.clear();
-			gw.draw(backgroundFrame);
-			drawFriend(gw, 0);
+			drawBackground(gw);
+			drawPlant(gw, 0);
+			drawEnemystone(gw, 0);
+			drawenemyShip(gw, 0);
 			animateprocessbar(gw, ng.fuel);
 			drawTextlayout(gw, ng);
 			drawMainShip(gw, 0, 0);
 			drawBullet(gw, 0);
+			drawBullete(gw, 0);
 			drawItem(gw, 0);
+			drawLogo(gw);
 			drawControl(gw);
-			//gw.popGLStates();
+			drawBackgroundIntro(gw, intro);
 			gw.display();
-			
 		}
 		step++;
+		animateenemy++;
 	}
 	return 0;
 }

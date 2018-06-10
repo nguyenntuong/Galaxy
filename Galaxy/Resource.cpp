@@ -10,10 +10,10 @@ string Resource::getdocs()
 {	
 	return string(docs[0]);
 }
-string Resource::backgrounds[1] = { "./Asset/images/background-1.jpg" };
-string Resource::getbackground()
+string Resource::backgrounds[2] = { "./Asset/images/background-1.jpg" ,"./Asset/images/background-intro.png"};
+string Resource::getbackground(int i)
 {	
-	return string(backgrounds[0]);
+	return string(backgrounds[i]);
 }
 string Resource::bullet[2] = { "./Asset/images/bullet/bullet.png","./Asset/images/bullet/bullet-e.png" };
 string Resource::getbullet(int type)
@@ -79,6 +79,27 @@ string Resource::font[1] = { "./Asset/font/Oregano-Regular.ttf" };
 string Resource::getfont(int i)
 {
 	return string(font[i]);
+}
+string Resource::intro[1] = { "./Asset/docs/Instructions.txt" };
+string Resource::getintro()
+{
+	fstream f;
+	string outp = "";
+	f.open(intro[0]);
+	while (!f.eof())
+	{
+		char temp[255];
+		f.getline(temp,255);
+		outp += temp;
+		outp += "\n";
+	}
+	return string(outp);
+}
+
+string Resource::logo[2] = {"./Asset/images/logos/logo-01.png","./Asset/images/logos/logo-02.png"};
+string Resource::getlogo(int i)
+{
+	return string(logo[i]);
 }
 
 

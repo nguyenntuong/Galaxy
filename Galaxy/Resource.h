@@ -2,12 +2,14 @@
 #include<iostream>
 #include<ctime>
 #include<vector>
+#include<fstream>
 using namespace std;
 class Resource
 {
 private:
 	static string docs[1];
-	static string backgrounds[1];
+	static string backgrounds[2];
+	static string logo[2];
 	static string ship[3];
 	static string control[4];
 	static string enemystone[4];
@@ -18,10 +20,11 @@ private:
 	static string assetcontrol[2];
 	static string processbar[1];
 	static string font[1];
+	static string intro[1];
 public:
 	Resource();
 	static string getdocs();
-	static string getbackground();
+	static string getbackground(int i);
 	static string getbullet(int type);
 	static string getcontrol(int type);
 	static string getrandomEnemyStone();
@@ -32,6 +35,8 @@ public:
 	static string getassetcontrol(int i);
 	static string getassetprocessbar();
 	static string getfont(int i);
+	static string getintro();
+	static string getlogo(int i);
 	~Resource();
 };
 
