@@ -13,7 +13,8 @@ private:
 	static string ship[3];
 	static string control[4];
 	static string enemystone[4];
-	static string enemyship[2];
+	static string enemyship[1];
+	static string friendship[1];
 	static string bullet[2];
 	static string planted[7];
 	static string item[1];
@@ -29,6 +30,7 @@ public:
 	static string getcontrol(int type);
 	static string getrandomEnemyStone();
 	static string getrandomEnemyShip();
+	static string getrandomFriendShip();
 	static string getrandomPlanted();
 	static vector<string> getshipAnimate();
 	static string getrandomItem();

@@ -10,11 +10,33 @@ using namespace sf;
 
 struct InfoGame
 {
+	string name = "";
 	int fuel = 100;
 	int score = 0;
 	bool isOver = false;
 	bool isPause = false;
+	bool isImport = false;
+	string printIF()
+	{
+		return "Player: " + name + " - Score: " + to_string(score) + "\n";
+	}
+	void reset()
+	{
+		name = "";
+		fuel = 100;
+		score = 0;
+		isOver = false;
+		isPause = false;
+		isImport = false;
+	}
+
 };
+struct compare
+{
+	bool operator() (InfoGame i, InfoGame j) { return (i.score < j.score); }
+}compare;
+
+vector<InfoGame> listplayer;
 
 Text sco;
 Text fuel;
@@ -66,15 +88,24 @@ void drawBackground(RenderWindow &gw)
 void createLogo()
 {
 	Texture* logoTexture = new Texture();
-	logoTexture->loadFromFile(Resource::getlogo(0));
+	logoTexture->loadFromFile(Resource::getlogo(1));
 	logoFrame.setTexture(*logoTexture);
-	logoFrame.setScale(0.5, 0.5);
+	logoFrame.setScale(0.3, 0.3);
 	logoFrame.setPosition(backgroundFrame.getGlobalBounds().width - logoFrame.getGlobalBounds().width - 5,
 		backgroundFrame.getGlobalBounds().height - logoFrame.getGlobalBounds().height - 5);
 }
 
-void drawLogo(RenderWindow &gw)
+int logoid = 1;
+void drawLogo(RenderWindow &gw, int i = 0)
 {
+	if (logoid != i)
+	{
+		Texture* logoTexture = new Texture();
+		logoTexture->loadFromFile(Resource::getlogo(i));
+		delete logoFrame.getTexture();
+		logoFrame.setTexture(*logoTexture);
+		logoid = i;
+	}
 	gw.draw(logoFrame);
 }
 
@@ -88,10 +119,19 @@ void createBackgoundIntro()
 		backgroundFrame.getGlobalBounds().height / 2 - backgroundIntroFrame.getGlobalBounds().height / 2);
 }
 
-void drawBackgroundIntro(RenderWindow &gw, Text text)
+void drawBackgroundIntro(RenderWindow &gw, Text text, string over="")
 {
-	text.setString(Resource::getintro());
-	text.setPosition(backgroundIntroFrame.getPosition().x + 5, backgroundIntroFrame.getPosition().y + 5);
+	if (over!="")
+	{
+		text.setString(over);
+		text.setPosition(backgroundIntroFrame.getPosition().x + backgroundIntroFrame.getGlobalBounds().width/2, backgroundIntroFrame.getPosition().y + 10);
+	}
+	else
+	{
+		text.setString(Resource::getintro());
+		text.setPosition(backgroundIntroFrame.getPosition().x + 5, backgroundIntroFrame.getPosition().y + 5);
+	}
+	
 	gw.draw(backgroundIntroFrame);
 	gw.draw(text);
 }
@@ -108,15 +148,13 @@ void createControl()
 		controlFrame.push_back(temp);
 	}
 
-	for (int i = 0; i < 2; i++)
-	{
-		Texture *tempt = new Texture();
-		tempt->loadFromFile(Resource::getassetcontrol(i));
-		Sprite temp;
-		temp.setTexture(*tempt);
-		temp.setScale(0.5, 0.5);
-		assetFrame.push_back(temp);
-	}
+	Texture *tempt = new Texture();
+	tempt->loadFromFile(Resource::getassetcontrol(1));
+	Sprite temp;
+	temp.setTexture(*tempt);
+	temp.setScale(0.5, 0.5);
+	assetFrame.push_back(temp);
+
 }
 
 void drawControl(RenderWindow &gw)
@@ -142,22 +180,22 @@ void drawControl(RenderWindow &gw)
 		}
 		gw.draw(controlFrame[i]);
 	}
-	for (int i = 0; i < int(assetFrame.size()); i++)
-	{
-		switch (i)
-		{
-		case 0:
-			assetFrame[0].setPosition(10, 5);
-			break;
-		case 1:
-			assetFrame[1].setPosition(10 + assetFrame[i - 1].getGlobalBounds().width * 2, 5);
-			break;
-		default:
-			break;
-		}
-		gw.draw(assetFrame[i]);
-	}
 }
+
+int psid = 1;
+void drawPScontrol(RenderWindow &gw, int i = 0)
+{
+	if (psid != i)
+	{
+		Texture* psTexture = new Texture();
+		psTexture->loadFromFile(Resource::getassetcontrol(i));
+		delete assetFrame[0].getTexture();
+		assetFrame[0].setTexture(*psTexture);
+		psid = i;
+	}
+	gw.draw(assetFrame[0]);
+}
+
 int step = 0;
 void checkShipframe()
 {
@@ -175,7 +213,7 @@ void createShip()
 		temptx->loadFromFile(Resource::getshipAnimate()[i]);
 		Sprite temp;
 		temp.setTexture(*temptx);
-		temp.setScale(0.5, 0.5);
+		temp.setScale(0.3, 0.3);
 		temp.setPosition(10, 250);
 		shipFrame.push_back(temp);
 	}
@@ -233,7 +271,6 @@ void createenemyShip()
 }
 
 int animateenemy = 0;
-Texture *cache;
 void drawenemyShip(RenderWindow &gw, float speed)
 {
 	if (animateenemy == 4) animateenemy = 0;
@@ -249,6 +286,32 @@ void drawenemyShip(RenderWindow &gw, float speed)
 	}
 }
 
+void createfriendShip()
+{
+	if (friendFrame.size() < 10)
+	{
+		srand(NULL);
+		Texture *temptx = new Texture();
+		temptx->loadFromFile(Resource::getrandomFriendShip());
+		Sprite temp;
+		temp.setTexture(*temptx);
+		temp.setScale(0.5, 0.5);
+		temp.setPosition(backgroundFrame.getGlobalBounds().width - 1, rand() % (int)backgroundFrame.getGlobalBounds().height + shipFrame[0].getGlobalBounds().height);
+		friendFrame.push_back(temp);
+	}
+}
+
+int animatefriend = 0;
+void drawfriendShip(RenderWindow &gw, float speed)
+{
+	if (animatefriend == 4) animatefriend = 0;
+	for (int i = 0; i < int(friendFrame.size()); i++)
+	{
+		friendFrame[i].move(-speed, 0);
+		friendFrame[i].setTextureRect(IntRect(animatefriend * 80, 0, 80, 80));
+		gw.draw(friendFrame[i]);
+	}
+}
 void createBullet()
 {
 	Texture *temptx = new Texture();
@@ -308,7 +371,7 @@ void createEnemystone()
 			temp.setScale(0.3, 0.3);
 		temp.setPosition(backgroundFrame.getGlobalBounds().width - 1,
 			rand() % (int)backgroundFrame.getGlobalBounds().height + temp.getGlobalBounds().height);
-		enemystoneFrame.push_back(make_pair(temp, 2));
+		enemystoneFrame.push_back(make_pair(temp, 1));
 	}
 }
 
@@ -438,11 +501,19 @@ void checkOut()
 			enemyFrame.erase(enemyFrame.begin());
 		}
 	}
+	if (enemystoneFrame.size() != 0)
+	{
+		if (!backgroundFrame.getGlobalBounds().contains(enemystoneFrame.front().first.getPosition()))
+		{
+			delete enemystoneFrame[0].first.getTexture();
+			enemystoneFrame.erase(enemystoneFrame.begin());
+		}
+	}
 }
 
 void checkImpactBulletObj(InfoGame &ng)
 {
-	if (bulletFrame.size() != 0 && enemystoneFrame.size() != 0 || enemyFrame.size() != 0)
+	if (bulletFrame.size() != 0 && (enemystoneFrame.size() != 0 || enemyFrame.size() != 0 || friendFrame.size() != 0))
 	{
 		int bsize = int(bulletFrame.size());
 		int i = 0;
@@ -473,22 +544,47 @@ void checkImpactBulletObj(InfoGame &ng)
 				continue;
 			}
 			f = 0;
+			fsize = int(friendFrame.size());
+			while (f < fsize)
+			{
+				if (friendFrame[f].getGlobalBounds().contains(float(bulletFrame[i].getPosition().x + float(bulletFrame[i].getGlobalBounds().width / 2)), float(bulletFrame[i].getPosition().y + float(bulletFrame[i].getGlobalBounds().height / 2))))
+				{
+					delete bulletFrame[i].getTexture();
+					delete friendFrame[f].getTexture();
+					bulletFrame.erase(bulletFrame.begin() + i);
+					friendFrame.erase(friendFrame.begin() + f);
+					ng.fuel -= 5;
+					flag = true;
+					break;
+				}
+				fsize = int(friendFrame.size());
+				f++;
+			}
+			if (flag)
+			{
+				bsize = int(bulletFrame.size());
+				i++;
+				continue;
+			}
+			f = 0;
 			fsize = int(enemystoneFrame.size());
 			while (f < fsize)
 			{
-				if (enemystoneFrame[f].first.getGlobalBounds().contains(float(bulletFrame[i].getPosition().x + float(bulletFrame[i].getGlobalBounds().width / 2)), 
+				if (enemystoneFrame[f].first.getGlobalBounds().contains(float(bulletFrame[i].getPosition().x + float(bulletFrame[i].getGlobalBounds().width / 2)),
 					float(bulletFrame[i].getPosition().y + float(bulletFrame[i].getGlobalBounds().height / 2))))
 				{
-					if (enemystoneFrame[f].second == 0)
+					if (!enemystoneFrame[f].second)
 					{
 						delete bulletFrame[i].getTexture();
-						delete enemystoneFrame[f].first.getTexture();
 						bulletFrame.erase(bulletFrame.begin() + i);
+						delete enemystoneFrame[f].first.getTexture();
 						enemystoneFrame.erase(enemystoneFrame.begin() + f);
 						ng.score += 10;
 					}
 					else
 					{
+						delete bulletFrame[i].getTexture();
+						bulletFrame.erase(bulletFrame.begin() + i);
 						enemystoneFrame[f].second--;
 					}
 					break;
@@ -502,7 +598,7 @@ void checkImpactBulletObj(InfoGame &ng)
 	}
 }
 
-void checkImpactShipItem(InfoGame &ng)
+void checkImpactShipObjec(InfoGame &ng)
 {
 	if (itemFrame.size() != 0)
 	{
@@ -531,14 +627,66 @@ void checkImpactShipItem(InfoGame &ng)
 			{
 				delete bulleteFrame[i].getTexture();
 				bulleteFrame.erase(bulleteFrame.begin() + i);
-				ng.fuel <= 10 ? ng.fuel = 0 : ng.fuel -= 10;
+				ng.fuel <= 10 ? ng.isOver = true : ng.fuel -= 5;
 			}
 			isize = int(bulleteFrame.size());
 			i++;
 		}
 	}
+
+	if (enemyFrame.size() != 0)
+	{
+		int isize = int(enemyFrame.size());
+		int i = 0;
+		while (i < isize)
+		{
+			if (enemyFrame[i].getGlobalBounds().contains(shipFrame[step].getPosition().x + shipFrame[step].getGlobalBounds().width / 2,
+				shipFrame[step].getPosition().y + shipFrame[step].getGlobalBounds().height / 2))
+			{
+				delete enemyFrame[i].getTexture();
+				enemyFrame.erase(enemyFrame.begin() + i);
+				ng.fuel <= 5 ? ng.isOver = true : ng.fuel -= 5;
+			}
+			isize = int(enemyFrame.size());
+			i++;
+		}
+	}
+
+	if (enemystoneFrame.size() != 0)
+	{
+		int isize = int(enemystoneFrame.size());
+		int i = 0;
+		while (i < isize)
+		{
+			if (enemystoneFrame[i].first.getGlobalBounds().contains(shipFrame[step].getPosition().x + shipFrame[step].getGlobalBounds().width / 2,
+				shipFrame[step].getPosition().y + shipFrame[step].getGlobalBounds().height / 2))
+			{
+				ng.fuel <= 5 * enemystoneFrame[i].second ? ng.isOver = true : ng.fuel -= 5 * enemystoneFrame[i].second;
+				delete enemystoneFrame[i].first.getTexture();
+				enemystoneFrame.erase(enemystoneFrame.begin() + i);
+			}
+			isize = int(enemystoneFrame.size());
+			i++;
+		}
+	}
 }
 
+void newgame()
+{
+	enemyFrame.clear();
+
+	enemystoneFrame.clear();
+
+	plantedFrame.clear();
+
+	friendFrame.clear();
+
+	itemFrame.clear();
+
+	bulletFrame.clear();
+
+	bulleteFrame.clear();
+}
 int main()
 {
 	RenderWindow gw(VideoMode(960, 540), "Galaxy");
@@ -576,13 +724,17 @@ int main()
 			createItem();
 		}
 		/// Random enemy
-		if (rand() % 15 == 5 && rand() % 10 == 5 && !ng.isPause && !firstplay)
+		if (rand() % 15 == 6 && rand() % 10 == 5 && !ng.isPause && !firstplay)
 		{
 			createenemyShip();
 		}
+		/// Random friend
+		if (rand() % 15 == 7 && rand() % 10 == 5 && !ng.isPause && !firstplay)
+		{
+			createfriendShip();
+		}
 		/// Random enemyStone
-		/// Random enemy
-		if (rand() % 15 == 5 && rand() % 10 == 5 && !ng.isPause && !firstplay)
+		if (rand() % 15 == 3 && rand() % 10 == 5 && !ng.isPause && !firstplay)
 		{
 			createEnemystone();
 		}
@@ -598,16 +750,20 @@ int main()
 				{
 					if (assetFrame[0].getGlobalBounds().contains(pos.x, pos.y))
 					{
-						ng.isPause = true;
-					}
-					if (assetFrame[1].getGlobalBounds().contains(pos.x, pos.y))
-					{
-						ng.isPause = false;
+						ng.isPause = !ng.isPause;
 					}
 					if (backgroundIntroFrame.getGlobalBounds().contains(pos.x, pos.y))
 					{
-						firstplay = false;
-						ng.isPause = false;
+						if (ng.isOver)
+						{
+							ng.reset();
+							newgame();
+						}
+						else
+						{
+							firstplay = false;
+							ng.isPause = false;
+						}						
 					}
 				}
 			}
@@ -648,8 +804,6 @@ int main()
 			}
 			if (ge.type == Event::KeyPressed)
 			{
-				firstplay = false;
-				ng.isPause = false;
 				if (ge.key.code == Keyboard::Space)
 				{
 					if (checkkey && !ng.isPause && !firstplay)
@@ -660,7 +814,20 @@ int main()
 				}
 				if (ge.key.code == Keyboard::P)
 				{
-					ng.isPause = true;
+					ng.isPause = !ng.isPause;
+				}
+				if (ge.key.code != Keyboard::P)
+				{
+					if (ng.isOver)
+					{
+						ng.reset();
+						newgame();
+					}
+					else
+					{
+						firstplay = false;
+						ng.isPause = false;
+					}
 				}
 			}
 			if (Keyboard::isKeyPressed(Keyboard::Up)) {
@@ -699,32 +866,67 @@ int main()
 		std::cout << " + Enemy counter: " << enemyFrame.size();
 		std::cout << "\n";
 		//// Draw ////
-		if (!ng.isPause && !firstplay)
+		if (ng.isOver)
+		{
+			if (!ng.isImport)
+			{
+				listplayer.push_back(ng);
+				ng.isImport = true;
+				sort(listplayer.begin(), listplayer.end(), compare);
+			}
+			string s = "\t\t\t\t Summary\n";
+			for (int i = 0; i < int(listplayer.size()); i++)
+			{
+				s += listplayer[i].printIF();
+			}
+			s += "\t\t\t\t Click aor Press Any key to restart";
+			gw.clear();
+			drawBackground(gw);
+			drawPlant(gw, 0);
+			drawEnemystone(gw, 0);
+			drawenemyShip(gw, 0);
+			drawfriendShip(gw, 0);
+			drawMainShip(gw, 0, 0);
+			drawBullet(gw, 0);
+			drawBullete(gw, 0);
+			drawItem(gw, 0);
+			animateprocessbar(gw, ng.fuel);
+			drawTextlayout(gw, ng);
+			drawLogo(gw, 1);
+			drawControl(gw);
+			drawPScontrol(gw, 1);
+			drawBackgroundIntro(gw, intro,s);
+			gw.display();
+		}
+		else if (!ng.isPause && !firstplay)
 		{
 			gw.clear();
 			checkOut();
 			checkImpactBulletObj(ng);
-			checkImpactShipItem(ng);
+			checkImpactShipObjec(ng);
 			drawBackground(gw);
 			drawPlant(gw, 4);
 			drawEnemystone(gw, 3);
 			drawenemyShip(gw, 5);
-			animateprocessbar(gw, ng.fuel);
-			drawTextlayout(gw, ng);
+			drawfriendShip(gw, 4);
 			drawMainShip(gw, shipmov.x, shipmov.y);
 			drawBullet(gw, 20);
 			drawBullete(gw, 15);
 			drawItem(gw, 1);
+			animateprocessbar(gw, ng.fuel);
+			drawTextlayout(gw, ng);
 			drawLogo(gw);
 			drawControl(gw);
+			drawPScontrol(gw);
 			gw.display();
 
 			if (time(0) - before >= 1)
 			{
 				ng.fuel -= 2;
+				if (ng.fuel <= 0)
+					ng.isOver = true;
 				before = time(0);
 			}
-
 		}
 		else
 		{
@@ -733,19 +935,22 @@ int main()
 			drawPlant(gw, 0);
 			drawEnemystone(gw, 0);
 			drawenemyShip(gw, 0);
-			animateprocessbar(gw, ng.fuel);
-			drawTextlayout(gw, ng);
+			drawfriendShip(gw, 0);
 			drawMainShip(gw, 0, 0);
 			drawBullet(gw, 0);
 			drawBullete(gw, 0);
 			drawItem(gw, 0);
-			drawLogo(gw);
+			animateprocessbar(gw, ng.fuel);
+			drawTextlayout(gw, ng);
+			drawLogo(gw, 1);
 			drawControl(gw);
+			drawPScontrol(gw, 1);
 			drawBackgroundIntro(gw, intro);
 			gw.display();
 		}
 		step++;
 		animateenemy++;
+		animatefriend++;
 	}
 	return 0;
 }

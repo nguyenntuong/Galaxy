@@ -34,12 +34,17 @@ string Resource::getrandomEnemyStone()
 	srand(time(NULL));	
 	return string(enemystone[rand() % 4]);
 }
-string Resource::enemyship[2] = { "./Asset/images/e-ship/ship_1.png"
-, "./Asset/images/e-ship/ship_1.png" };
+string Resource::enemyship[1] = { "./Asset/images/e-ship/ship_1.png" };
 string Resource::getrandomEnemyShip()
 {
 	srand(time(NULL));
-	return string(enemyship[rand() % 2]);
+	return string(enemyship[rand() % 1]);
+}
+string Resource::friendship[1] = { "./Asset/images/e-ship/ship_2.png" };
+string Resource::getrandomFriendShip()
+{
+	srand(time(NULL));
+	return string(friendship[rand() % 1]);
 }
 string Resource::planted[7] = {"./Asset/images/planets/001-global.png"
 ,"./Asset/images/planets/002-travel.png"
