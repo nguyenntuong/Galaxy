@@ -1,15 +1,24 @@
 ﻿  main.cpp
-d:\th\galaxy\galaxy\main.cpp(93): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(117): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(216): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(243): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(321): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(346): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(371): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(396): warning C4305: 'argument': truncation from 'double' to 'float'
-d:\th\galaxy\galaxy\main.cpp(417): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-d:\th\galaxy\galaxy\main.cpp(422): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-d:\th\galaxy\galaxy\main.cpp(751): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-d:\th\galaxy\galaxy\main.cpp(755): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-d:\th\galaxy\galaxy\main.cpp(774): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\th\galaxy\galaxy\main.cpp(131): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(155): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(298): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(325): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(407): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(432): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(457): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(482): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\th\galaxy\galaxy\main.cpp(503): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+d:\th\galaxy\galaxy\main.cpp(508): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+d:\th\galaxy\galaxy\main.cpp(893): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\th\galaxy\galaxy\main.cpp(901): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\th\galaxy\galaxy\main.cpp(906): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\th\galaxy\galaxy\main.cpp(910): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\th\galaxy\galaxy\main.cpp(929): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  Resource.cpp
+d:\th\galaxy\galaxy\resource.cpp(31): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+d:\th\galaxy\galaxy\resource.cpp(37): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+d:\th\galaxy\galaxy\resource.cpp(43): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+d:\th\galaxy\galaxy\resource.cpp(55): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+d:\th\galaxy\galaxy\resource.cpp(66): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating Code...
   Galaxy.vcxproj -> D:\TH\Galaxy\x64\Debug\Galaxy.exe

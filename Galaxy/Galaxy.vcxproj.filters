@@ -27,4 +27,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Library\SFML-2.4.2\bin\sfml-audio-2.dll" />
+  </ItemGroup>
 </Project>

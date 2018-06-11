@@ -18,10 +18,11 @@ private:
 	static string bullet[2];
 	static string planted[7];
 	static string item[1];
-	static string assetcontrol[2];
+	static string assetcontrol[6];
 	static string processbar[1];
 	static string font[1];
 	static string intro[1];
+	static string sound[3];
 public:
 	Resource();
 	static string getdocs();
@@ -39,6 +40,7 @@ public:
 	static string getfont(int i);
 	static string getintro();
 	static string getlogo(int i);
+	static string getsound(int i);
 	~Resource();
 };
 

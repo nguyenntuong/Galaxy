@@ -1,7 +1,5 @@
 #include "Resource.h"
 
-
-
 Resource::Resource()
 {
 }
@@ -26,7 +24,6 @@ string Resource::getcontrol(int type)
 {	
 	return string(control[type]);		
 }
-
 string Resource::enemystone[4] = { "./Asset/images/enemy/aestroid_brown.png","./Asset/images/enemy/aestroid_dark.png"
 , "./Asset/images/enemy/aestroid_gray.png","./Asset/images/enemy/aestroid_gray_2.png" };
 string Resource::getrandomEnemyStone()
@@ -58,7 +55,6 @@ string Resource::getrandomPlanted()
 	srand(time(NULL));
 	return string(planted[rand() % 7]);
 }
-
 string Resource::ship[3] = { "./Asset/images/ship/main-1.png","./Asset/images/ship/main-2.png","./Asset/images/ship/main-3.png" };
 vector<string> Resource::getshipAnimate()
 {
@@ -70,7 +66,7 @@ string Resource::getrandomItem()
 	srand(time(NULL));
 	return string(item[rand() % 1]);
 }
-string Resource::assetcontrol[2] = { "./Asset/images/control/pause.png","./Asset/images/control/play.png" };
+string Resource::assetcontrol[6] = { "./Asset/images/control/pause.png","./Asset/images/control/play.png" ,"./Asset/images/control/score.png","./Asset/images/control/time.png","./Asset/images/control/on.png","./Asset/images/control/off.png" };
 string Resource::getassetcontrol(int i)
 {
 	return string(assetcontrol[i]);
@@ -100,14 +96,16 @@ string Resource::getintro()
 	}
 	return string(outp);
 }
-
 string Resource::logo[2] = {"./Asset/images/logos/logo-01.png","./Asset/images/logos/logo-02.png"};
 string Resource::getlogo(int i)
 {
 	return string(logo[i]);
 }
-
-
+string Resource::sound[3] = { "./Asset/sound/background.wav","./Asset/sound/destroyed.wav","./Asset/sound/shoot.wav" };
+string Resource::getsound(int i)
+{
+	return string(sound[i]);
+}
 Resource::~Resource()
 {
 }
